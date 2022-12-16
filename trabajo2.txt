@@ -1,0 +1,183 @@
+//Julian Andres Gil
+/Alex Santiago Betancourth Obando
+
+#include <LiquidCrystal.h>
+#include <Keypad.h>
+
+const byte ROWS = 4;
+const byte COLS = 3;
+char keys[ROWS][COLS] = {
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
+};
+byte rowPins[ROWS] = {5, 4, 3, 2};
+byte colPins[COLS] = {8, 7, 6};
+
+
+Keypad keypad= Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// pines para LCD
+const int rs = 12, en = 11, d4 = 31, d5 = 32, d6 = 33, d7 = 34;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+//pines LED
+int ledRojo=23;   
+int ledVerde=24;   
+int ledAzul=25;    
+
+//variables
+char clave[4] = {'2','2','5','5'}; 
+int posicion=0;
+int cursor=0;
+int intentos=0;
+
+
+void setup() {
+  pinMode(ledRojo,OUTPUT);
+  pinMode(ledVerde,OUTPUT);
+  pinMode(ledAzul,OUTPUT);
+
+  lcd.begin(16, 2);
+  lcd.clear();
+  
+  lcd.setCursor(0, 0);
+  lcd.print(" SISTEMA ");
+  lcd.setCursor(0, 1);
+  lcd.print(" SEGURIDAD ");
+  delay(400);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Ingrese la clave");
+  lcd.setCursor(0,1);
+   
+}
+
+void loop() {
+   
+  char key = keypad.getKey();
+  if(key){
+    lcd.print("*");
+    cursor++;
+         if (key == clave[posicion]&& cursor <= 4){
+               posicion ++;
+               if (posicion == 4){
+                 clave_correcta();
+              }
+            }else {
+               posicion=0;}
+            if(cursor >= 4){
+              clave_incorrecta();
+              if(intentos == 3 ){
+                sistema_bloqueado();
+              }
+            }
+        }
+     }
+
+    void clave_correcta(){
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Clave correcta!! ");
+      digitalWrite(ledVerde,HIGH);
+      delay(1000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("bienvenido!");        
+      secuencia_led();
+      posicion=0;
+      intentos=0;
+      cursor=0;
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("CERRANDO SISTEMA");
+       lcd.setCursor(0,1);
+      lcd.print("ADIOS!!");
+      delay(1000);
+      setup();
+      }
+
+    void clave_incorrecta(){
+         cursor=0;
+         posicion=0;
+         intentos++;
+         lcd.setCursor(0,1);
+         lcd.print("Clave erronea!");
+         digitalWrite(ledRojo,HIGH); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,HIGH);
+         delay(1000);
+         digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,LOW);
+         lcd.clear();
+         lcd.setCursor(0, 0);
+         lcd.print("Ingrese la clave");
+         lcd.setCursor(0,1);
+      }
+     
+      void sistema_bloqueado(){
+          intentos=0;
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Clave bloqueada");
+          lcd.setCursor(0,1);
+          lcd.print("Espere...");
+          //led rojo
+          digitalWrite(ledRojo,HIGH); 
+          digitalWrite(ledAzul,LOW);
+          digitalWrite(ledVerde,LOW);    
+          delay(2000);
+          digitalWrite(ledRojo,LOW);
+          lcd.clear();
+          lcd.setCursor(0,0);   
+          setup(); 
+        }
+
+      void secuencia_led(){
+         digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,LOW);
+         delay(200);
+
+         digitalWrite(ledRojo,HIGH); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,LOW);
+         delay(200);
+
+         digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,HIGH);
+         digitalWrite(ledVerde,LOW);
+         delay(200);
+
+         digitalWrite(ledRojo,HIGH); 
+         digitalWrite(ledAzul,HIGH);
+         digitalWrite(ledVerde,LOW);
+         delay(200);
+
+         digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,HIGH);
+         delay(200);
+
+         digitalWrite(ledRojo,HIGH); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,HIGH);
+         delay(200);
+
+         digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,HIGH);
+         digitalWrite(ledVerde,HIGH);
+         delay(200);
+         
+          digitalWrite(ledRojo,HIGH); 
+         digitalWrite(ledAzul,HIGH);
+         digitalWrite(ledVerde,HIGH);
+         delay(200);
+         
+          digitalWrite(ledRojo,LOW); 
+         digitalWrite(ledAzul,LOW);
+         digitalWrite(ledVerde,LOW);
+         delay(200);
+        }
