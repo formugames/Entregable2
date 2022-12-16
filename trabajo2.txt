@@ -1,5 +1,5 @@
 //Julian Andres Gil
-/Alex Santiago Betancourth Obando
+//Alex Santiago Betancourth Obando
 
 #include <LiquidCrystal.h>
 #include <Keypad.h>
